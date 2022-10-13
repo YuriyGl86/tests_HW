@@ -78,8 +78,11 @@ def delete_doc():
                 return doc_number, True
 
 
-def get_doc_shelf():
-    user_doc_number = input('Введите номер документа - ')
+def get_doc_shelf(*args, **kwargs):
+    if 'user_doc_number' in kwargs:
+        user_doc_number = kwargs['user_doc_number']
+    else:
+        user_doc_number = input('Введите номер документа - ')
     doc_exist = check_document_existance(user_doc_number)
     if doc_exist:
         for directory_number, directory_docs_list in directories.items():
@@ -87,12 +90,20 @@ def get_doc_shelf():
                 return directory_number
 
 
-def move_doc_to_shelf():
+def get_doc_move_info():
     user_doc_number = input('Введите номер документа - ')
     user_shelf_number = input('Введите номер полки для перемещения - ')
+    return user_doc_number, user_shelf_number
+
+
+def move_doc_to_shelf():
+    user_doc_number, user_shelf_number = get_doc_move_info()
+    directory_number = get_doc_shelf(user_doc_number=user_doc_number)
     remove_doc_from_shelf(user_doc_number)
     append_doc_to_shelf(user_doc_number, user_shelf_number)
     print('Документ номер "{}" был перемещен на полку номер "{}"'.format(user_doc_number, user_shelf_number))
+    if user_doc_number in directories[user_shelf_number] and user_doc_number not in directories[directory_number]:
+        return True
 
 
 def show_document_info(document):
